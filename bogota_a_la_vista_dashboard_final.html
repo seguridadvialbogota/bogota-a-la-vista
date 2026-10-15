@@ -88,4 +88,54 @@ document.getElementById('uploadBtn').addEventListener('click',()=>excelInput.cli
 excelInput.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{let wb;if(f.name.toLowerCase().endsWith('.csv')){let txt=await f.text();wb=XLSX.read(txt,{type:'string'});}else{let buf=await f.arrayBuffer();wb=XLSX.read(buf,{type:'array'});}let sheet=wb.Sheets[wb.SheetNames[0]];let json=XLSX.utils.sheet_to_json(sheet,{defval:''});const required=['localidad','vias','frecuencia','causa','horario','actores','condiciones'];if(!json.length)throw new Error('El archivo no contiene filas de datos.');let keys=Object.keys(json[0]);let missing=required.filter(k=>!keys.includes(k));if(missing.length)throw new Error('No encuentro estas columnas necesarias: '+missing.join(', ')+'. Usa el archivo original de respuestas.');data=json.map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,typeof v==='string'?v.trim():v])));fillSelect('localidad','localidad');fillSelect('causa','causa');fillSelect('horario','horario');fillSelect('frecuencia','frecuencia');document.getElementById('updated').textContent='Actualizado: '+new Date().toLocaleString('es-CO');render();}catch(err){alert('No pude cargar ese archivo. '+err.message)}finally{e.target.value=''}});
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));b.classList.add('active');let target=document.getElementById(b.dataset.section);if(target)target.scrollIntoView({behavior:'smooth',block:'start'})}));
 init();
+
+const DATA_URL = "https://script.google.com/macros/s/AKfycbxbh-f35HD9_K_ygW84xgkCXIj4mtF8JGBWfLYpXMpUk-sEf5A27kfR0dZQsNvs0SQw/exec";
+
+function actualizarEncuesta() {
+  const callback = "encuestaCallback_" + Date.now();
+
+  window[callback] = function(respuestas) {
+    try {
+      if (!Array.isArray(respuestas)) return;
+
+      data = respuestas.map(r =>
+        Object.fromEntries(
+          Object.entries(r).map(([k, v]) => [
+            k,
+            typeof v === "string" ? v.trim() : v
+          ])
+        )
+      );
+
+      ["localidad", "causa", "horario", "frecuencia"]
+        .forEach(id => {
+          const key = id;
+          fillSelect(id, key);
+        });
+
+      document.getElementById("updated").textContent =
+        "Actualizado: " + new Date().toLocaleString("es-CO");
+
+      render();
+    } catch (error) {
+      console.error("Error actualizando el dashboard:", error);
+    } finally {
+      delete window[callback];
+      script.remove();
+    }
+  };
+
+  const script = document.createElement("script");
+  script.src = DATA_URL + "?callback=" + callback;
+  script.onerror = () => {
+    console.error("No se pudieron consultar las respuestas nuevas.");
+    delete window[callback];
+    script.remove();
+  };
+
+  document.body.appendChild(script);
+}
+
+actualizarEncuesta();
+setInterval(actualizarEncuesta, 30000);
 </script></body></html>
