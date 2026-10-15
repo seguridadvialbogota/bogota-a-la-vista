@@ -769,20 +769,23 @@
           </p>
         </div>
 
-        <div class="panel-dashboard">
-          <div class="icono">📊</div>
-          <h3>Próximamente: nuestro dashboard</h3>
-          <p>
-            Aquí proyectamos incluir gráficos de las respuestas, mapas
-            de las calles mencionadas y visualizaciones relacionadas con
-            la percepción ciudadana sobre los riesgos viales. Más adelante,
-            se podrán integrar datos oficiales adicionales para ampliar
-            el análisis.
-          </p>
-          <span class="proximamente">
-            Espacio reservado para futuras actualizaciones
-          </span>
-        </div>
+        ```html
+<div class="panel-dashboard" style="max-width: 1200px; padding: 15px; border-style: solid;">
+  <h3 style="margin: 10px 0 18px;">Dashboard interactivo de Bogotá a la Vista 📊</h3>
+
+  <p style="margin-bottom: 22px;">
+    Explora las respuestas de nuestra encuesta, consulta las gráficas y utiliza los filtros para conocer la percepción ciudadana sobre la seguridad vial en Bogotá.
+  </p>
+
+  <iframe
+    src="bogota_a_la_vista_dashboard_final.html"
+    title="Dashboard interactivo de Bogotá a la Vista"
+    width="100%"
+    height="1100"
+    style="display: block; width: 100%; border: 1px solid #E9DDEC; border-radius: 14px; background: white;"
+    loading="lazy">
+  </iframe>
+</div>
       </div>
     </section>
   </main>
